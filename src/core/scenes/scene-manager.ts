@@ -4,6 +4,7 @@ import {KeyboardService} from "../keyboard/services/keyboard.service";
 import {SoundService} from "../sounds/services/sound.service";
 import {SpriteService} from "../sprites/services/sprite.service";
 import {RenderService} from "../render/services/render.service";
+import {SceneFin} from "./scene-fin.js";
 
 export class SceneManager<IMAGE> {
 
@@ -22,6 +23,12 @@ export class SceneManager<IMAGE> {
                 soundService,
                 spriteService,
                 renderService,
+            ),
+            new SceneFin(
+                keyboardService,
+                soundService,
+                spriteService,
+                renderService,
             )
         ];
 
@@ -36,6 +43,7 @@ export class SceneManager<IMAGE> {
 
             if (nextScene) {
                 this.ptrCurrentScene = nextScene;
+                this.ptrCurrentScene.reset();
             }
         }
     }

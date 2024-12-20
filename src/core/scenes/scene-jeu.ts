@@ -5,6 +5,7 @@ import {SoundService} from "../sounds/services/sound.service";
 import {RenderService} from "../render/services/render.service";
 import {SpriteService} from "../sprites/services/sprite.service";
 import {Scene} from "./scene";
+import {SceneFin} from "./scene-fin.js";
 
 export class SceneJeu<IMAGE> implements Scene {
     static ID_SCENE = "SceneJeu";
@@ -22,6 +23,14 @@ export class SceneJeu<IMAGE> implements Scene {
         private spriteService: SpriteService<IMAGE>,
         private renderService: RenderService<IMAGE>
     ) {}
+
+    reset(): void {
+        this.player = {
+            position: new Vector2D(50, 50),
+            speed: 200,
+        }
+        this.isMoving = false;
+    }
 
     update(dt: number): string | undefined {
         this.isMoving = false;
@@ -45,6 +54,11 @@ export class SceneJeu<IMAGE> implements Scene {
 
         if (this.isMoving) {
             this.soundService.playSound("step", { volume: 0.3 });
+        }
+
+        // TODO : à retirer, c'est juste pour test en live.
+        if (this.player.position.x > 300) {
+            return SceneFin.ID_SCENE;
         }
 
         return;
