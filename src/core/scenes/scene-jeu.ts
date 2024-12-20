@@ -51,8 +51,6 @@ export class SceneJeu<IMAGE> implements SceneModel, SceneBehavior {
     }
 
     draw(): void {
-        this.renderService.clearScreen();
-
         const spritePlayer = this.spriteService.getFromId("player");
         const spriteEnemy = this.spriteService.getFromId("enemy");
 

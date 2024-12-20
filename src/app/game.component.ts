@@ -70,6 +70,7 @@ export class GameComponent {
     }
 
     private draw(): void {
+        this.renderService.clearScreen();
         this.sceneJeu.draw();
     }
 }
