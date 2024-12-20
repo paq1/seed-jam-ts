@@ -10,6 +10,9 @@ import {MusicHandleFirstClick} from "../core/musics/services/music.handle-first-
 import {MusicHandlerFirstClickDom} from "./musics/services/music.handle-first-click.dom.js";
 import {ModelPlayer} from "../core/gameelements/player/models/model.player.js";
 import Vector2D from "../core/datas/vecteur2d.js";
+import {RenderService} from "../core/render/services/render.service";
+import {RenderServiceDom} from "./render/services/render.service.dom.js";
+import {SceneJeu} from "../core/scenes/scene-jeu.js";
 
 export class GameComponent {
 
@@ -22,7 +25,9 @@ export class GameComponent {
     soundService: SoundService = new SoundServiceDom();
     spriteService: SpriteService<HTMLImageElement> = new SpriteServiceDom();
     handlerFirstClickForMusic: MusicHandleFirstClick;
+    renderService: RenderService<HTMLImageElement>;
 
+    sceneJeu: SceneJeu<HTMLImageElement>;
 
     // TODO : a bouger et nettoyer
     lastTime: number = 0;
@@ -37,6 +42,13 @@ export class GameComponent {
         this.canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
         this.canvasCtx = this.canvas.getContext("2d");
         this.handlerFirstClickForMusic = new MusicHandlerFirstClickDom("btnMusic", this.musicService);
+        this.renderService = new RenderServiceDom(this.canvas, this.canvasCtx);
+        this.sceneJeu = new SceneJeu(
+            this.keyboardService,
+            this.soundService,
+            this.spriteService,
+            this.renderService
+        );
     }
 
     init(): void {
@@ -50,55 +62,14 @@ export class GameComponent {
         requestAnimationFrame(this.run.bind(this));
     }
 
-    // TODO (nice): isoler dans un service (logique du jeu)
     private update(timestamp: number): void {
         const deltaTime = (timestamp - this.lastTime) / 1000;
         this.lastTime = timestamp;
 
-        this.isMoving = false;
-
-        if (this.keyboardService.isKeyPressed("ArrowRight")) {
-            this.player.position.x += this.player.speed * deltaTime;
-            this.isMoving = true;
-        }
-        if (this.keyboardService.isKeyPressed("ArrowLeft")) {
-            this.player.position.x -= this.player.speed * deltaTime;
-            this.isMoving = true;
-        }
-        if (this.keyboardService.isKeyPressed("ArrowUp")) {
-            this.player.position.y -= this.player.speed * deltaTime;
-            this.isMoving = true;
-        }
-        if (this.keyboardService.isKeyPressed("ArrowDown")) {
-            this.player.position.y += this.player.speed * deltaTime;
-            this.isMoving = true;
-        }
-
-        if (this.isMoving) {
-            this.soundService.playSound("step", { volume: 0.3 });
-        }
+        this.sceneJeu.update(deltaTime);
     }
 
-
-    // TODO (nice): isoler dans un service (logique d'affichage)
     private draw(): void {
-        if (this.canvasCtx) {
-            this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Efface le canvas
-
-            const spritePlayer = this.spriteService.getFromId("player")?.image;
-            const spriteEnemy = this.spriteService.getFromId("enemy")?.image;
-
-            if (spritePlayer) {
-                if (spritePlayer.complete) {
-                    this.canvasCtx.drawImage(spritePlayer, this.player.position.x, this.player.position.y, 50, 50);
-                }
-            }
-
-            if (spriteEnemy) {
-                if (spriteEnemy.complete) {
-                    this.canvasCtx.drawImage(spriteEnemy, 300, 200, 50, 50);
-                }
-            }
-        }
+        this.sceneJeu.draw();
     }
 }
