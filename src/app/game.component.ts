@@ -8,11 +8,9 @@ import {SpriteService} from "../core/sprites/services/sprite.service.js";
 import {SpriteServiceDom} from "./sprites/services/sprite.service.dom.js";
 import {MusicHandleFirstClick} from "../core/musics/services/music.handle-first-click.js";
 import {MusicHandlerFirstClickDom} from "./musics/services/music.handle-first-click.dom.js";
-import {ModelPlayer} from "../core/gameelements/player/models/model.player.js";
-import Vector2D from "../core/datas/vecteur2d.js";
 import {RenderService} from "../core/render/services/render.service";
 import {RenderServiceDom} from "./render/services/render.service.dom.js";
-import {SceneJeu} from "../core/scenes/scene-jeu.js";
+import {SceneManager} from "../core/scenes/scene-manager.js";
 
 export class GameComponent {
 
@@ -27,15 +25,10 @@ export class GameComponent {
     handlerFirstClickForMusic: MusicHandleFirstClick;
     renderService: RenderService<HTMLImageElement>;
 
-    sceneJeu: SceneJeu<HTMLImageElement>;
+    sceneManager: SceneManager<HTMLImageElement>;
 
     // TODO : a bouger et nettoyer
     lastTime: number = 0;
-    player: ModelPlayer = {
-        position: new Vector2D(50, 50),
-        speed: 200,
-    }
-    isMoving = false;
 
 
     constructor() {
@@ -43,7 +36,7 @@ export class GameComponent {
         this.canvasCtx = this.canvas.getContext("2d");
         this.handlerFirstClickForMusic = new MusicHandlerFirstClickDom("btnMusic", this.musicService);
         this.renderService = new RenderServiceDom(this.canvas, this.canvasCtx);
-        this.sceneJeu = new SceneJeu(
+        this.sceneManager = new SceneManager(
             this.keyboardService,
             this.soundService,
             this.spriteService,
@@ -66,11 +59,11 @@ export class GameComponent {
         const deltaTime = (timestamp - this.lastTime) / 1000;
         this.lastTime = timestamp;
 
-        this.sceneJeu.update(deltaTime);
+        this.sceneManager.update(deltaTime);
     }
 
     private draw(): void {
         this.renderService.clearScreen();
-        this.sceneJeu.draw();
+        this.sceneManager.draw();
     }
 }

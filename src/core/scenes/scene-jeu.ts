@@ -1,14 +1,14 @@
-import {SceneModel} from "./models/scene.model";
-import {SceneBehavior} from "./scene.behavior";
 import {ModelPlayer} from "../gameelements/player/models/model.player";
 import Vector2D from "../datas/vecteur2d.js";
 import {KeyboardService} from "../keyboard/services/keyboard.service";
 import {SoundService} from "../sounds/services/sound.service";
 import {RenderService} from "../render/services/render.service";
 import {SpriteService} from "../sprites/services/sprite.service";
+import {Scene} from "./scene";
 
-export class SceneJeu<IMAGE> implements SceneModel, SceneBehavior {
-    identifiant: string = "jeu";
+export class SceneJeu<IMAGE> implements Scene {
+    static ID_SCENE = "SceneJeu";
+    identifiant: string = SceneJeu.ID_SCENE;
 
     player: ModelPlayer = {
         position: new Vector2D(50, 50),
@@ -23,7 +23,7 @@ export class SceneJeu<IMAGE> implements SceneModel, SceneBehavior {
         private renderService: RenderService<IMAGE>
     ) {}
 
-    update(dt: number): SceneBehavior | undefined {
+    update(dt: number): string | undefined {
         this.isMoving = false;
 
         if (this.keyboardService.isKeyPressed("ArrowRight")) {
