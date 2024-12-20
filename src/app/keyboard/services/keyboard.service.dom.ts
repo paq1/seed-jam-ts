@@ -11,7 +11,6 @@ export class KeyboardServiceDom implements KeyboardService {
 
     initialize(): KeyboardService {
         document.addEventListener("keydown", (e) => {
-            console.log(e.keyCode);
             this.keyboard.keys[e.key] = true
         });
         document.addEventListener("keyup", (e) => this.keyboard.keys[e.key] = false);
