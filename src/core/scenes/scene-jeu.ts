@@ -15,7 +15,6 @@ export class SceneJeu<IMAGE> implements Scene {
         position: new Vector2D(50, 50),
         speed: 200,
     }
-    isMoving = false;
 
     constructor(
         private keyboardService: KeyboardService,
@@ -29,32 +28,10 @@ export class SceneJeu<IMAGE> implements Scene {
             position: new Vector2D(50, 50),
             speed: 200,
         }
-        this.isMoving = false;
     }
 
     update(dt: number): string | undefined {
-        this.isMoving = false;
-
-        if (this.keyboardService.isKeyPressed("ArrowRight")) {
-            this.player.position.x += this.player.speed * dt;
-            this.isMoving = true;
-        }
-        if (this.keyboardService.isKeyPressed("ArrowLeft")) {
-            this.player.position.x -= this.player.speed * dt;
-            this.isMoving = true;
-        }
-        if (this.keyboardService.isKeyPressed("ArrowUp")) {
-            this.player.position.y -= this.player.speed * dt;
-            this.isMoving = true;
-        }
-        if (this.keyboardService.isKeyPressed("ArrowDown")) {
-            this.player.position.y += this.player.speed * dt;
-            this.isMoving = true;
-        }
-
-        if (this.isMoving) {
-            this.soundService.playSound("step", { volume: 0.3 });
-        }
+        this.movePlayer(dt);
 
         // TODO : à retirer, c'est juste pour test en live.
         if (this.player.position.x > 300) {
@@ -80,6 +57,49 @@ export class SceneJeu<IMAGE> implements Scene {
 
         if (spriteEnemy) {
             this.renderService.draw(spriteEnemy, {x: 300, y: 200}, {x: 50, y: 50});
+        }
+    }
+
+    private movePlayer(dt: number): void {
+        const maybeNewPlayerPosition = this.maybeNewPlayerPosition(dt);
+        if (maybeNewPlayerPosition) {
+            this.player.position = maybeNewPlayerPosition;
+            this.soundService.playSound("step", { volume: 0.3 });
+        }
+    }
+
+    private maybeNewPlayerPosition(dt: number): Vector2D | undefined {
+        let newPosition: Vector2D = {...this.player.position};
+
+        if (this.keyboardService.isKeyPressed("ArrowRight")) {
+            newPosition = {
+                ...newPosition,
+                x: newPosition.x + this.player.speed * dt,
+            };
+        }
+        if (this.keyboardService.isKeyPressed("ArrowLeft")) {
+            newPosition = {
+                ...newPosition,
+                x: newPosition.x - this.player.speed * dt,
+            };
+        }
+        if (this.keyboardService.isKeyPressed("ArrowUp")) {
+            newPosition = {
+                ...newPosition,
+                y: newPosition.y - this.player.speed * dt
+            };
+        }
+        if (this.keyboardService.isKeyPressed("ArrowDown")) {
+            newPosition = {
+                ...newPosition,
+                y: newPosition.y + this.player.speed * dt
+            };
+        }
+
+        if (Vector2D.equals(this.player.position, newPosition)) {
+            return;
+        } else {
+            return newPosition;
         }
     }
 }
