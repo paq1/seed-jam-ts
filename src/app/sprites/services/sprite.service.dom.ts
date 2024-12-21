@@ -1,5 +1,6 @@
-import { SpriteModel } from "../../../core/sprites/models/sprite.model";
+import {SpriteModel} from "../../../core/sprites/models/sprite.model";
 import {SpriteService} from "../../../core/sprites/services/sprite.service";
+import {AnimationType} from "../../../core/sprites/enum/animation.enum.js";
 
 export class SpriteServiceDom implements SpriteService<HTMLImageElement> {
 
@@ -18,18 +19,33 @@ export class SpriteServiceDom implements SpriteService<HTMLImageElement> {
 
         this.sprites = {
             "player": {
-                image: playerImage
+                image: playerImage,
+                animationType: AnimationType.NONE,
             },
             "enemy": {
                 image: enemyImage,
+                animationType: AnimationType.NONE
             },
             "snake-sprites-sheet": {
                 image: snakeSpritesSheetImage,
+                animationType: AnimationType.VERTICAL,
+                nbAnimations: 4,
+                animationFrame: 4,
+                widthOneFrame: 16,
+                heightOneFrame: 16,
             }
         }
     }
 
-    getFromId(id: string): SpriteModel<HTMLImageElement> | undefined {
+    getFromIdUnsafe(id: string): SpriteModel<HTMLImageElement> {
         return this.sprites[id];
+    }
+
+    getFromId(id: string): SpriteModel<HTMLImageElement> | undefined {
+        try {
+            return this.sprites[id];
+        } catch (e) {
+            return undefined;
+        }
     }
 }
