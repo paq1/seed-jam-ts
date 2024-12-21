@@ -25,4 +25,27 @@ export class RenderServiceDom implements RenderService<HTMLImageElement> {
             this.canvasCtx?.drawImage(sprite.image, x, y, w, h);
         }
     }
+
+    drawFromSpriteSheet(
+        sprite: SpriteModel<HTMLImageElement>,
+        destinationPosition: Vector2D,
+        destinationSize: Vector2D,
+        sourcePosition: Vector2D,
+        sourceSize: Vector2D,
+    ): void {
+        if (sprite.image.complete) {
+            // ctx.drawImage(spriteSheet, sx, sy, frameWidth, frameHeight, playerX, playerY, frameWidth, frameHeight);
+            this.canvasCtx?.drawImage(
+                sprite.image,
+                sourcePosition.x,
+                sourcePosition.y,
+                sourceSize.x,
+                sourceSize.y,
+                destinationPosition.x,
+                destinationPosition.y,
+                destinationSize.x,
+                destinationSize.y,
+            );
+        }
+    }
 }

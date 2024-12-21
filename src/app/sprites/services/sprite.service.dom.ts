@@ -13,6 +13,8 @@ export class SpriteServiceDom implements SpriteService<HTMLImageElement> {
         playerImage.src = `${spritesPath}/player.png`;
         const enemyImage = new Image();
         enemyImage.src = `${spritesPath}/enemy.png`;
+        const snakeSpritesSheetImage = new Image();
+        snakeSpritesSheetImage.src = `${spritesPath}/snake-sprites-sheet.png`;
 
         this.sprites = {
             "player": {
@@ -20,6 +22,9 @@ export class SpriteServiceDom implements SpriteService<HTMLImageElement> {
             },
             "enemy": {
                 image: enemyImage,
+            },
+            "snake-sprites-sheet": {
+                image: snakeSpritesSheetImage,
             }
         }
     }

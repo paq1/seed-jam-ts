@@ -65,11 +65,17 @@ export class SceneJeu<IMAGE> implements Scene {
     }
 
     draw(): void {
-        const spritePlayer = this.spriteService.getFromId("player");
         const spriteEnemy = this.spriteService.getFromId("enemy");
+        const spritesSheetSnake = this.spriteService.getFromId("snake-sprites-sheet");
 
-        if (spritePlayer) {
-            this.renderService.draw(spritePlayer, this.player.position, {x: 50, y: 50});
+        if (spritesSheetSnake) {
+            this.renderService.drawFromSpriteSheet(
+                spritesSheetSnake,
+                this.player.position,
+                {x: 64, y: 64},
+                {x: 0, y: 0},
+                {x: 16, y: 16},
+            );
         }
 
         if (spriteEnemy) {
