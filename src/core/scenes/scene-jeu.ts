@@ -6,6 +6,7 @@ import {RenderService} from "../render/services/render.service";
 import {SpriteService} from "../sprites/services/sprite.service";
 import {Scene} from "./scene";
 import {SceneFin} from "./scene-fin.js";
+import {SpriteAnimated} from "../sprites/sprite-animated.js";
 
 export class SceneJeu<IMAGE> implements Scene {
     static ID_SCENE = "SceneJeu";
@@ -15,13 +16,17 @@ export class SceneJeu<IMAGE> implements Scene {
         position: new Vector2D(50, 50),
         speed: 200,
     }
+    playerAnimation: SpriteAnimated<IMAGE>;
 
     constructor(
         private keyboardService: KeyboardService,
         private soundService: SoundService,
         private spriteService: SpriteService<IMAGE>,
         private renderService: RenderService<IMAGE>
-    ) {}
+    ) {
+        const sprite = this.spriteService.getFromIdUnsafe("snake-sprites-sheet");
+        this.playerAnimation = new SpriteAnimated(this.renderService, sprite);
+    }
 
     reset(): void {
         this.player = {
@@ -46,13 +51,7 @@ export class SceneJeu<IMAGE> implements Scene {
         const spritesSheetSnake = this.spriteService.getFromId("snake-sprites-sheet");
 
         if (spritesSheetSnake) {
-            this.renderService.drawFromSpriteSheet(
-                spritesSheetSnake,
-                this.player.position,
-                {x: 64, y: 64},
-                {x: 0, y: 0},
-                {x: 16, y: 16},
-            );
+            this.playerAnimation.draw(this.player.position, {x: 64, y: 64});
         }
 
         if (spriteEnemy) {
@@ -63,8 +62,12 @@ export class SceneJeu<IMAGE> implements Scene {
     private movePlayer(dt: number): void {
         const maybeNewPlayerPosition = this.maybeNewPlayerPosition(dt);
         if (maybeNewPlayerPosition) {
+            const lastPlayerPosition: Vector2D = {...this.player.position};
             this.player.position = maybeNewPlayerPosition;
             this.soundService.playSound("step", { volume: 0.3 });
+            this.handlePlayerAnimationUpdate(dt, lastPlayerPosition);
+        } else {
+            this.playerAnimation.stopAnimation();
         }
     }
 
@@ -100,6 +103,18 @@ export class SceneJeu<IMAGE> implements Scene {
             return;
         } else {
             return newPosition;
+        }
+    }
+
+    private handlePlayerAnimationUpdate(dt: number, oldPlayerPosition: Vector2D): void {
+        if (oldPlayerPosition.x < this.player.position.x) {
+            this.playerAnimation.animate(dt, 3);
+        } else if (oldPlayerPosition.x > this.player.position.x) {
+            this.playerAnimation.animate(dt, 2);
+        } else if (oldPlayerPosition.y < this.player.position.y) {
+            this.playerAnimation.animate(dt, 0);
+        } else if (oldPlayerPosition.y > this.player.position.y) {
+            this.playerAnimation.animate(dt, 1);
         }
     }
 }
